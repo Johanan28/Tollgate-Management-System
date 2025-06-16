@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tollgate Management System</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+      :root {
+        --white: #FFFFFF;
+        --google-blue: #4285F4;
+        --light-gray: #F1F3F4;
+        --dark-gray: #5F6368;
+        --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Roboto', sans-serif;
+        color: var(--dark-gray);
+        background-color: var(--white);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .header {
+        background: var(--white);
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header .profile-icon {
+        width: 40px;
+        height: 40px;
+        background-color: var(--google-blue);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .header .profile-icon:hover {
+        background-color: #3267D6;
+      }
+
+      .header .logo {
+        font-size: 1.2em;
+        font-weight: 500;
+        color: var(--dark-gray);
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .header .right-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .header .menu-toggle {
+        cursor: pointer;
+        font-size: 1.5em;
+        color: var(--dark-gray);
+        transition: color 0.3s ease;
+      }
+
+      .header .menu-toggle:hover {
+        color: var(--google-blue);
+      }
+
+      .header .user-section {
+        position: relative;
+      }
+
+      .header .user-action {
+        background: none;
+        border: none;
+        color: var(--google-blue);
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 5px 10px;
+        transition: background 0.3s ease;
+      }
+
+      .header .user-action:hover {
+        background: var(--light-gray);
+        border-radius: 15px;
+      }
+
+      .dropdown {
+        display: block;
+        position: absolute;
+        top: 40px;
+        right: 0;
+        background: var(--white);
+        border: 1px solid var(--light-gray);
+        border-radius: 4px;
+        box-shadow: var(--shadow);
+        z-index: 1000;
+        min-width: 150px;
+        text-align: center;
+        opacity: 0;
+        transform: scale(0.95);
+        visibility: hidden;
+        transform-origin: top right;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+      }
+
+      .dropdown.active {
+        opacity: 1;
+        transform: scale(1);
+        visibility: visible;
+      }
+
+      .dropdown a, .dropdown button {
+        display: block;
+        padding: 10px 15px;
+        color: var(--dark-gray);
+        text-decoration: none;
+        background: none;
+        border: none;
+        width: 100%;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      .dropdown a:hover, .dropdown button:hover {
+        background: var(--light-gray);
+        color: var(--google-blue);
+      }
+
+      .main-content {
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        min-height: calc(100vh - 120px);
+      }
+
+      .form-container {
+        display: none;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .form-container.active {
+        display: block;
+      }
+
+      .card {
+        background: var(--white);
+        border: 1px solid var(--light-gray);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: var(--shadow);
+      }
+
+      .card h2 {
+        margin-bottom: 15px;
+        color: var(--dark-gray);
+        font-size: 1.2em;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .button-container .btn {
+        flex-grow: 1;
+        min-width: 150px;
+        max-width: 180px;
+      }
+
+      .form-container label {
+        display: block;
+        margin: 10px 0 5px;
+        color: var(--dark-gray);
+        font-weight: 500;
+      }
+
+      .form-container input,
+      .form-container select,
+      .form-container textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid var(--light-gray);
+        border-radius: 4px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.9em;
+        color: var(--dark-gray);
+        background: var(--white);
+      }
+
+      .form-container input:focus {
+        border-color: var(--google-blue);
+        outline: none;
+      }
+
+      .btn {
+        background: var(--google-blue);
+        color: var(--white);
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.9em;
+        margin: 5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: background 0.3s ease;
+      }
+
+      .btn span {
+        display: block;
+        text-align: center;
+        width: 100%;
+      }
+
+      .btn:hover {
+        background: #3267D6;
+      }
+
+      .btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .btn-secondary {
+        background: var(--white);
+        color: var(--google-blue);
+        border: 1px solid var(--google-blue);
+        transition: background 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: var(--light-gray);
+      }
+
+      .status-message {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        display: none;
+        font-size: 0.9em;
+        text-align: center;
+      }
+
+      .success {
+        background-color: #E8F0FE;
+        color: var(--google-blue);
+      }
+
+      .error {
+        background-color: #FEE2E2;
+        color: #D93025;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        border: 1px solid var(--light-gray);
+      }
+
+      th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      th {
+        background: var(--light-gray);
+        color: var(--dark-gray);
+        font-weight: 500;
+      }
+
+      td {
+        background: var(--white);
+        color: var(--dark-gray);
+      }
+
+      footer {
+        background: var(--white);
+        color: var(--dark-gray);
+        text-align: center;
+        padding: 10px 0;
+        position: relative;
+        bottom: 0;
+        width: 100%;
+        font-size: 0.8em;
+        border-top: 1px solid var(--light-gray);
+      }
+
+      .loading-spinner {
+        border: 3px solid var(--light-gray);
+        border-top: 3px solid var(--google-blue);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: none;
+        margin: 10px auto;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 20px 10px;
+        }
+
+        .form-container {
+          max-width: 100%;
+        }
+
+        .header .logo {
+          font-size: 1em;
+        }
+
+        .dropdown {
+          right: -10px;
+        }
+
+        .button-container {
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .button-container .btn {
+          min-width: 100%;
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="profile-icon" id="profile-icon" onclick="cycleSections()">H</div>
+      <div class="logo">Tollgate Management System</div>
+      <div class="right-section">
+        <div class="user-section">
+          <button id="user-action" class="user-action" onclick="toggleUserDropdown()">Login / Register</button>
+          <div id="user-dropdown" class="dropdown">
+            <a href="#" onclick="showSection('admin')">Login as Admin</a>
+            <a href="#" onclick="showSection('driver')">Login as Driver</a>
+            <a href="#" onclick="showAdminRegister()">Register as Admin</a>
+            <a href="#" onclick="showDriverRegister()">Register as Driver</a>
+          </div>
+        </div>
+        <div class="menu-section">
+          <span class="menu-toggle" onclick="toggleMenu()">⋮</span>
+          <div id="menu-dropdown" class="dropdown">
+            <a href="#" onclick="showSection('home')">Home</a>
+            <a href="#" onclick="showSection('admin')">Admin Portal</a>
+            <a href="#" onclick="showSection('driver')">Driver Portal</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div id="home-section" class="form-container active">
+        <div class="card">
+          <h2>Welcome to Tollgate Management System</h2>
+          <p style="text-align: center;">Please select a portal to proceed:</p>
+          <div class="button-container">
+            <button class="btn" onclick="showSection('admin')" aria-label="Go to Admin Portal">
+              <span>Admin Portal</span>
+            </button>
+            <button class="btn" onclick="showSection('driver')" aria-label="Go to Driver Portal">
+              <span>Driver Portal</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-section" class="form-container">
+        <div class="card">
+          <h2>Admin Login</h2>
+          <label for="admin-name">Name</label>
+          <input type="text" id="admin-name" placeholder="Admin Name" required />
+          <label for="admin-password">Password</label>
+          <input type="password" id="admin-password" placeholder="Password" required />
+          <button class="btn" onclick="adminLogin()" aria-label="Login as Admin">
+            <span>Login</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showAdminRegister()" aria-label="Register as Admin">
+            <span>Register</span>
+          </button>
+          <div id="admin-status" class="status-message"></div>
+          <div id="admin-loading" class="loading-spinner"></div>
+        </div>
+        <div id="admin-register" class="card" style="display: none;">
+          <h2>Admin Registration</h2>
+          <label for="admin-reg-name">Name</label>
+          <input type="text" id="admin-reg-name" placeholder="Admin Name" required pattern="[A-Za-z0-9]+" title="Name should only contain letters and numbers" />
+          <label for="admin-reg-password">Password</label>
+          <input type="password" id="admin-reg-password" placeholder="Password (min 6 characters)" required minlength="6" />
+          <button class="btn" onclick="registerAdmin()" aria-label="Register Admin">
+            <span>Register</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showAdminLogin()" aria-label="Back to Admin Login">
+            <span>Back to Login</span>
+          </button>
+          <div id="admin-reg-status" class="status-message"></div>
+          <div id="admin-reg-loading" class="loading-spinner"></div>
+        </div>
+        <div id="admin-dashboard" class="card" style="display: none;">
+          <h2>Admin Dashboard</h2>
+          <button class="btn btn-secondary" onclick="showAddTollgate()" aria-label="Add Tollgate">
+            <span>Add Tollgate</span>
+          </button>
+          <button class="btn btn-secondary" onclick="viewVehicles()" aria-label="View Vehicles">
+            <span>View Vehicles</span>
+          </button>
+          <button class="btn btn-secondary" onclick="viewPaidMessages()" aria-label="View Paid Messages">
+            <span>View Paid Messages</span>
+          </button>
+          <button class="btn btn-secondary" onclick="createQR()" aria-label="Create QR Code">
+            <span>Create QR</span>
+          </button>
+          <div id="admin-action-result"></div>
+          <div id="admin-action-loading" class="loading-spinner"></div>
+        </div>
+        <div id="add-tollgate" class="card" style="display: none;">
+          <h2>Add Tollgate</h2>
+          <label for="tollgate-name">Tollgate Name</label>
+          <input type="text" id="tollgate-name" placeholder="Tollgate Name" required pattern="[A-Za-z0-9 ]+" title="Tollgate name should only contain letters, numbers, and spaces" />
+          <label for="tollgate-fare">Fare (₹)</label>
+          <input type="number" id="tollgate-fare" placeholder="Fare" min="1" required />
+          <button class="btn" onclick="addTollgate()" aria-label="Add Tollgate">
+            <span>Add</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showAdminDashboard()" aria-label="Back to Admin Dashboard">
+            <span>Back</span>
+          </button>
+          <div id="add-tollgate-status" class="status-message"></div>
+          <div id="add-tollgate-loading" class="loading-spinner"></div>
+        </div>
+      </div>
+
+      <div id="driver-section" class="form-container">
+        <div class="card">
+          <h2>Driver Login</h2>
+          <label for="driver-name">Name</label>
+          <input type="text" id="driver-name" placeholder="Driver Name" required />
+          <label for="driver-password">Password</label>
+          <input type="password" id="driver-password" placeholder="Password" required />
+          <button class="btn" onclick="driverLogin()" aria-label="Login as Driver">
+            <span>Login</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showDriverRegister()" aria-label="Register as Driver">
+            <span>Register</span>
+          </button>
+          <div id="driver-status" class="status-message"></div>
+          <div id="driver-loading" class="loading-spinner"></div>
+        </div>
+        <div id="driver-register" class="card" style="display: none;">
+          <h2>Driver Registration</h2>
+          <label for="driver-reg-name">Name</label>
+          <input type="text" id="driver-reg-name" placeholder="Driver Name" required pattern="[A-Za-z0-9]+" title="Name should only contain letters and numbers" />
+          <label for="driver-reg-password">Password</label>
+          <input type="password" id="driver-reg-password" placeholder="Password (min 6 characters)" required minlength="6" />
+          <button class="btn" onclick="registerDriver()" aria-label="Register Driver">
+            <span>Register</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showDriverLogin()" aria-label="Back to Driver Login">
+            <span>Back to Login</span>
+          </button>
+          <div id="driver-reg-status" class="status-message"></div>
+          <div id="driver-reg-loading" class="loading-spinner"></div>
+        </div>
+        <div id="driver-dashboard" class="card" style="display: none;">
+          <h2>Driver Dashboard</h2>
+          <button class="btn btn-secondary" onclick="searchTollgate()" aria-label="Search Tollgate">
+            <span>Search Tollgate</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showAddVehicle()" aria-label="Add Vehicle">
+            <span>Add Vehicle</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showPayFare()" aria-label="Pay Fare">
+            <span>Pay Fare</span>
+          </button>
+          <button class="btn btn-secondary" onclick="scanQR()" aria-label="Scan QR Code">
+            <span>Scan QR</span>
+          </button>
+          <div id="driver-action-result"></div>
+          <div id="driver-action-loading" class="loading-spinner"></div>
+        </div>
+        <div id="search-tollgate" class="card" style="display: none;">
+          <h2>Search Tollgate</h2>
+          <button class="btn" onclick="fetchTollgates()" aria-label="Fetch Tollgates">
+            <span>Fetch Tollgates</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showDriverDashboard()" aria-label="Back to Driver Dashboard">
+            <span>Back</span>
+          </button>
+          <div id="search-tollgate-result"></div>
+          <div id="search-tollgate-loading" class="loading-spinner"></div>
+        </div>
+        <div id="add-vehicle" class="card" style="display: none;">
+          <h2>Add Vehicle</h2>
+          <label for="vehicle-number">Vehicle Number</label>
+          <input type="text" id="vehicle-number" placeholder="Vehicle Number (e.g., ABC123)" required pattern="[A-Za-z0-9]+" title="Vehicle number should only contain letters and numbers" />
+          <button class="btn" onclick="addVehicle()" aria-label="Add Vehicle">
+            <span>Add</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showDriverDashboard()" aria-label="Back to Driver Dashboard">
+            <span>Back</span>
+          </button>
+          <div id="add-vehicle-status" class="status-message"></div>
+          <div id="add-vehicle-loading" class="loading-spinner"></div>
+        </div>
+        <div id="pay-fare" class="card" style="display: none;">
+          <h2>Pay Fare</h2>
+          <label for="pay-tollgate">Tollgate Name</label>
+          <input type="text" id="pay-tollgate" placeholder="Tollgate Name" required pattern="[A-Za-z0-9 ]+" title="Tollgate name should only contain letters, numbers, and spaces" />
+          <label for="pay-fare">Fare (₹)</label>
+          <input type="number" id="pay-fare" placeholder="Fare" min="1" required />
+          <button class="btn" onclick="payFare()" aria-label="Pay Fare">
+            <span>Pay</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showDriverDashboard()" aria-label="Back to Driver Dashboard">
+            <span>Back</span>
+          </button>
+          <div id="pay-fare-status" class="status-message"></div>
+          <div id="pay-fare-loading" class="loading-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2025 Tollgate Management System. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+      let currentUser = null;
+      let userType = null;
+      let isLoading = false;
+      let currentSection = 'home';
+
+      function updateProfileIcon() {
+        const icon = document.getElementById('profile-icon');
+        if (currentSection === 'home') {
+          icon.textContent = 'H';
+        } else if (currentSection === 'admin') {
+          icon.textContent = 'A';
+        } else if (currentSection === 'driver') {
+          icon.textContent = 'D';
+        }
+      }
+
+      function cycleSections() {
+        if (currentSection === 'home') {
+          currentSection = 'admin';
+        } else if (currentSection === 'admin') {
+          currentSection = 'driver';
+        } else if (currentSection === 'driver') {
+          currentSection = 'home';
+        }
+        showSection(currentSection);
+        updateProfileIcon();
+      }
+
+      function showStatus(elementId, message, isSuccess) {
+        const statusElement = document.getElementById(elementId);
+        statusElement.textContent = message;
+        statusElement.className = `status-message ${isSuccess ? "success" : "error"}`;
+        statusElement.style.display = "block";
+      }
+
+      function hideStatus(elementId) {
+        const statusElement = document.getElementById(elementId);
+        statusElement.style.display = "none";
+      }
+
+      function toggleLoading(elementId, show) {
+        const loadingElement = document.getElementById(elementId);
+        loadingElement.style.display = show ? "block" : "none";
+        isLoading = show;
+        document.querySelectorAll(".btn").forEach(btn => {
+          btn.disabled = isLoading;
+        });
+      }
+
+      function toggleMenu() {
+        const dropdown = document.getElementById("menu-dropdown");
+        dropdown.classList.toggle("active");
+      }
+
+      function toggleUserDropdown() {
+        const dropdown = document.getElementById("user-dropdown");
+        dropdown.classList.toggle("active");
+      }
+
+      function updateUserSection() {
+        const userAction = document.getElementById("user-action");
+        const dropdown = document.getElementById("user-dropdown");
+        if (currentUser && userType) {
+          userAction.textContent = `${currentUser.name} (${userType.charAt(0).toUpperCase() + userType.slice(1)})`;
+          dropdown.innerHTML = `
+            <button onclick="logout()">Logout</button>
+          `;
+        } else {
+          userAction.textContent = "Login / Register";
+          dropdown.innerHTML = `
+            <a href="#" onclick="showSection('admin')">Login as Admin</a>
+            <a href="#" onclick="showSection('driver')">Login as Driver</a>
+            <a href="#" onclick="showAdminRegister()">Register as Admin</a>
+            <a href="#" onclick="showDriverRegister()">Register as Driver</a>
+          `;
+        }
+      }
+
+      function showSection(sectionId) {
+        currentSection = sectionId;
+        document.querySelectorAll(".form-container").forEach((section) => {
+          section.classList.remove("active");
+          section.style.display = "none";
+        });
+        const section = document.getElementById(`${sectionId}-section`);
+        section.classList.add("active");
+        section.style.display = "block";
+
+        if (sectionId === "admin") {
+          showAdminLogin();
+        } else if (sectionId === "driver") {
+          showDriverLogin();
+        }
+
+        document.getElementById("menu-dropdown").classList.remove("active");
+        document.getElementById("user-dropdown").classList.remove("active");
+        updateProfileIcon();
+      }
+
+      function showAdminLogin() {
+        document.getElementById("admin-register").style.display = "none";
+        document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("add-tollgate").style.display = "none";
+        document.querySelector("#admin-section .card").style.display = "block";
+        hideStatus("admin-status");
+      }
+
+      function showAdminRegister() {
+        document.querySelector("#admin-section .card").style.display = "none";
+        document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("add-tollgate").style.display = "none";
+        document.getElementById("admin-register").style.display = "block";
+        hideStatus("admin-reg-status");
+        document.getElementById("user-dropdown").classList.remove("active");
+      }
+
+      function showAdminDashboard() {
+        document.querySelector("#admin-section .card").style.display = "none";
+        document.getElementById("admin-register").style.display = "none";
+        document.getElementById("add-tollgate").style.display = "none";
+        document.getElementById("admin-dashboard").style.display = "block";
+        document.getElementById("admin-action-result").innerHTML = "";
+      }
+
+      function showAddTollgate() {
+        document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("add-tollgate").style.display = "block";
+        hideStatus("add-tollgate-status");
+      }
+
+      async function registerAdmin() {
+        const name = document.getElementById("admin-reg-name").value;
+        const password = document.getElementById("admin-reg-password").value;
+
+        if (!name || !password) {
+          showStatus("admin-reg-status", "Please fill all fields", false);
+          return;
+        }
+
+        if (!/^[A-Za-z0-9]+$/.test(name)) {
+          showStatus("admin-reg-status", "Name should only contain letters and numbers", false);
+          return;
+        }
+
+        if (password.length < 6) {
+          showStatus("admin-reg-status", "Password must be at least 6 characters", false);
+          return;
+        }
+
+        toggleLoading("admin-reg-loading", true);
+        try {
+          const response = await fetch("/api/admin/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, password }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            showStatus("admin-reg-status", data.message, true);
+            setTimeout(() => {
+              showAdminLogin();
+            }, 2000);
+          } else {
+            console.error("Admin registration failed:", data);
+            showStatus("admin-reg-status", data.message || "Error registering admin", false);
+          }
+        } catch (err) {
+          console.error("Admin registration error:", err);
+          showStatus("admin-reg-status", "Error registering admin: " + err.message, false);
+        } finally {
+          toggleLoading("admin-reg-loading", false);
+        }
+      }
+
+      async function adminLogin() {
+        const name = document.getElementById("admin-name").value;
+        const password = document.getElementById("admin-password").value;
+
+        if (!name || !password) {
+          showStatus("admin-status", "Please fill all fields", false);
+          return;
+        }
+
+        toggleLoading("admin-loading", true);
+        try {
+          const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, password }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            currentUser = { name, password };
+            userType = "admin";
+            showStatus("admin-status", data.message, true);
+            updateUserSection();
+            showAdminDashboard();
+          } else {
+            showStatus("admin-status", data.message, false);
+          }
+        } catch (err) {
+          console.error("Admin login error:", err);
+          showStatus("admin-status", "Error logging in: " + err.message, false);
+        } finally {
+          toggleLoading("admin-loading", false);
+        }
+      }
+
+      async function addTollgate() {
+        const tollgate = document.getElementById("tollgate-name").value;
+        const fare = document.getElementById("tollgate-fare").value;
+
+        if (!tollgate || !fare) {
+          showStatus("add-tollgate-status", "Please fill all fields", false);
+          return;
+        }
+
+        if (!/^[A-Za-z0-9 ]+$/.test(tollgate)) {
+          showStatus("add-tollgate-status", "Tollgate name should only contain letters, numbers, and spaces", false);
+          return;
+        }
+
+        toggleLoading("add-tollgate-loading", true);
+        try {
+          const response = await fetch("/api/admin/add-tollgate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: currentUser.name, password: currentUser.password, tollgate, fare: parseFloat(fare) }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            showStatus("add-tollgate-status", data.message, true);
+            document.getElementById("tollgate-name").value = "";
+            document.getElementById("tollgate-fare").value = "";
+          } else {
+            showStatus("add-tollgate-status", data.message, false);
+          }
+        } catch (err) {
+          showStatus("add-tollgate-status", "Error adding tollgate: " + err.message, false);
+        } finally {
+          toggleLoading("add-tollgate-loading", false);
+        }
+      }
+
+      async function viewVehicles() {
+        toggleLoading("admin-action-loading", true);
+        try {
+          const response = await fetch(`/api/admin/view-vehicles?name=${currentUser.name}&password=${currentUser.password}`);
+          const data = await response.json();
+          if (response.ok) {
+            const vehicles = data.vehicles || [];
+            const html = `
+              <h3>Vehicles</h3>
+              ${vehicles.length > 0 ? `
+                <table>
+                  <tr><th>Driver Name</th><th>Vehicle</th></tr>
+                  ${vehicles.map(v => `<tr><td>${v.driverName}</td><td>${v.vehicle}</td></tr>`).join('')}
+                </table>
+              ` : `<p>No vehicles found.</p>`}
+            `;
+            document.getElementById("admin-action-result").innerHTML = html;
+          } else {
+            document.getElementById("admin-action-result").innerHTML = `<p>${data.message}</p>`;
+          }
+        } catch (err) {
+          document.getElementById("admin-action-result").innerHTML = "<p>Error fetching vehicles: " + err.message + "</p>";
+        } finally {
+          toggleLoading("admin-action-loading", false);
+        }
+      }
+
+      async function viewPaidMessages() {
+        toggleLoading("admin-action-loading", true);
+        try {
+          const response = await fetch(`/api/admin/view-paid-messages?name=${currentUser.name}&password=${currentUser.password}`);
+          const data = await response.json();
+          if (response.ok) {
+            const payments = Array.isArray(data.payments) ? data.payments : [];
+            const html = `
+              <h3>Paid Messages</h3>
+              ${payments.length > 0 ? `
+                <table>
+                  <tr><th>Driver Name</th><th>Tollgate</th><th>Fare</th><th>Timestamp</th></tr>
+                  ${payments.map(p => `
+                    <tr>
+                      <td>${p.driverName || 'N/A'}</td>
+                      <td>${p.tollgate || 'N/A'}</td>
+                      <td>${p.fare || 'N/A'}</td>
+                      <td>${p.timestamp ? new Date(p.timestamp).toLocaleString() : 'N/A'}</td>
+                    </tr>
+                  `).join('')}
+                </table>
+              ` : `<p>No paid messages found.</p>`}
+            `;
+            document.getElementById("admin-action-result").innerHTML = html;
+          } else {
+            document.getElementById("admin-action-result").innerHTML = `<p>${data.message}</p>`;
+          }
+        } catch (err) {
+          document.getElementById("admin-action-result").innerHTML = "<p>Error fetching paid messages: " + err.message + "</p>";
+        } finally {
+          toggleLoading("admin-action-loading", false);
+        }
+      }
+
+      async function createQR() {
+        toggleLoading("admin-action-loading", true);
+        try {
+          const response = await fetch("/api/admin/qr-create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: currentUser.name, password: currentUser.password }),
+          });
+          const data = await response.json();
+          document.getElementById("admin-action-result").innerHTML = `<p>${data.message}</p>`;
+        } catch (err) {
+          document.getElementById("admin-action-result").innerHTML = "<p>Error creating QR code: " + err.message + "</p>";
+        } finally {
+          toggleLoading("admin-action-loading", false);
+        }
+      }
+
+      function showDriverLogin() {
+        document.getElementById("driver-register").style.display = "none";
+        document.getElementById("driver-dashboard").style.display = "none";
+        document.getElementById("search-tollgate").style.display = "none";
+        document.getElementById("add-vehicle").style.display = "none";
+        document.getElementById("pay-fare").style.display = "none";
+        document.querySelector("#driver-section .card").style.display = "block";
+        hideStatus("driver-status");
+        document.getElementById("user-dropdown").classList.remove("active");
+      }
+
+      function showDriverRegister() {
+        document.querySelector("#driver-section .card").style.display = "none";
+        document.getElementById("driver-dashboard").style.display = "none";
+        document.getElementById("search-tollgate").style.display = "none";
+        document.getElementById("add-vehicle").style.display = "none";
+        document.getElementById("pay-fare").style.display = "none";
+        document.getElementById("driver-register").style.display = "block";
+        hideStatus("driver-reg-status");
+        document.getElementById("user-dropdown").classList.remove("active");
+      }
+
+      function showDriverDashboard() {
+        document.querySelector("#driver-section .card").style.display = "none";
+        document.getElementById("driver-register").style.display = "none";
+        document.getElementById("search-tollgate").style.display = "none";
+        document.getElementById("add-vehicle").style.display = "none";
+        document.getElementById("pay-fare").style.display = "none";
+        document.getElementById("driver-dashboard").style.display = "block";
+        document.getElementById("driver-action-result").innerHTML = "";
+      }
+
+      function showAddVehicle() {
+        document.getElementById("driver-dashboard").style.display = "none";
+        document.getElementById("add-vehicle").style.display = "block";
+        hideStatus("add-vehicle-status");
+      }
+
+      function showPayFare() {
+        document.getElementById("driver-dashboard").style.display = "none";
+        document.getElementById("pay-fare").style.display = "block";
+        hideStatus("pay-fare-status");
+      }
+
+      async function registerDriver() {
+        const name = document.getElementById("driver-reg-name").value;
+        const password = document.getElementById("driver-reg-password").value;
+
+        if (!name || !password) {
+          showStatus("driver-reg-status", "Please fill all fields", false);
+          return;
+        }
+
+        if (!/^[A-Za-z0-9]+$/.test(name)) {
+          showStatus("driver-reg-status", "Name should only contain letters and numbers", false);
+          return;
+        }
+
+        if (password.length < 6) {
+          showStatus("driver-reg-status", "Password must be at least 6 characters", false);
+          return;
+        }
+
+        toggleLoading("driver-reg-loading", true);
+        try {
+          const response = await fetch("/api/driver/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, password }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            showStatus("driver-reg-status", data.message, true);
+            setTimeout(() => {
+              showDriverLogin();
+            }, 2000);
+          } else {
+            console.error("Driver registration failed:", data);
+            showStatus("driver-reg-status", data.message || "Error registering driver", false);
+          }
+        } catch (err) {
+          console.error("Driver registration error:", err);
+          showStatus("driver-reg-status", "Error registering driver: " + err.message, false);
+        } finally {
+          toggleLoading("driver-reg-loading", false);
+        }
+      }
+
+      async function driverLogin() {
+        const name = document.getElementById("driver-name").value;
+        const password = document.getElementById("driver-password").value;
+
+        if (!name || !password) {
+          showStatus("driver-status", "Please fill all fields", false);
+          return;
+        }
+
+        toggleLoading("driver-loading", true);
+        try {
+          const response = await fetch("/api/driver/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, password }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            currentUser = { name, password, vehicles: data.driver.vehicles || [], payments: data.driver.payments || [] };
+            userType = "driver";
+            showStatus("driver-status", data.message, true);
+            updateUserSection();
+            showDriverDashboard();
+          } else {
+            showStatus("driver-status", data.message, false);
+          }
+        } catch (err) {
+          console.error("Driver login error:", err);
+          showStatus("driver-status", "Error logging in: " + err.message, false);
+        } finally {
+          toggleLoading("driver-loading", false);
+        }
+      }
+
+      async function searchTollgate() {
+        document.getElementById("driver-dashboard").style.display = "none";
+        document.getElementById("search-tollgate").style.display = "block";
+        document.getElementById("search-tollgate-result").innerHTML = "";
+      }
+
+      async function fetchTollgates() {
+        toggleLoading("search-tollgate-loading", true);
+        try {
+          const response = await fetch(`/api/driver/search-tollgate?name=${currentUser.name}&password=${currentUser.password}`);
+          const data = await response.json();
+          if (response.ok) {
+            const tollgates = data.tollgates || [];
+            const html = `
+              <h3>Tollgates</h3>
+              ${tollgates.length > 0 ? `
+                <table>
+                  <tr><th>Tollgate Name</th><th>Fare (₹)</th></tr>
+                  ${tollgates.map(t => `<tr><td>${t.tollgate}</td><td>${t.fare}</td></tr>`).join('')}
+                </table>
+              ` : `<p>No tollgates found.</p>`}
+            `;
+            document.getElementById("search-tollgate-result").innerHTML = html;
+          } else {
+            document.getElementById("search-tollgate-result").innerHTML = `<p>${data.message}</p>`;
+          }
+        } catch (err) {
+          document.getElementById("search-tollgate-result").innerHTML = "<p>Error fetching tollgates: " + err.message + "</p>";
+        } finally {
+          toggleLoading("search-tollgate-loading", false);
+        }
+      }
+
+      async function addVehicle() {
+        const vehicle = document.getElementById("vehicle-number").value;
+
+        if (!vehicle) {
+          showStatus("add-vehicle-status", "Please enter a vehicle number", false);
+          return;
+        }
+
+        if (!/^[A-Za-z0-9]+$/.test(vehicle)) {
+          showStatus("add-vehicle-status", "Vehicle number should only contain letters and numbers", false);
+          return;
+        }
+
+        toggleLoading("add-vehicle-loading", true);
+        try {
+          const response = await fetch("/api/driver/add-vehicle", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: currentUser.name, password: currentUser.password, vehicle }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            currentUser.vehicles.push(vehicle);
+            showStatus("add-vehicle-status", data.message, true);
+            document.getElementById("vehicle-number").value = "";
+          } else {
+            showStatus("add-vehicle-status", data.message, false);
+          }
+        } catch (err) {
+          showStatus("add-vehicle-status", "Error adding vehicle: " + err.message, false);
+        } finally {
+          toggleLoading("add-vehicle-loading", false);
+        }
+      }
+
+      async function payFare() {
+        const tollgate = document.getElementById("pay-tollgate").value.trim();
+        const fare = document.getElementById("pay-fare").value;
+
+        if (!tollgate) {
+          showStatus("pay-fare-status", "Tollgate name is required", false);
+          return;
+        }
+
+        if (!fare) {
+          showStatus("pay-fare-status", "Fare amount is required", false);
+          return;
+        }
+
+        const fareValue = parseFloat(fare);
+        if (isNaN(fareValue) || fareValue <= 0) {
+          showStatus("pay-fare-status", "Fare must be a positive number", false);
+          return;
+        }
+
+        if (!/^[A-Za-z0-9 ]+$/.test(tollgate)) {
+          showStatus("pay-fare-status", "Tollgate name should only contain letters, numbers, and spaces", false);
+          return;
+        }
+
+        toggleLoading("pay-fare-loading", true);
+        try {
+          const response = await fetch("/api/driver/pay-fare", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: currentUser.name, password: currentUser.password, tollgate, fare: fareValue }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            currentUser.payments.push({ tollgate, fare: fareValue, timestamp: new Date() });
+            showStatus("pay-fare-status", data.message, true);
+            document.getElementById("pay-tollgate").value = "";
+            document.getElementById("pay-fare").value = "";
+          } else {
+            showStatus("pay-fare-status", data.message, false);
+          }
+        } catch (err) {
+          showStatus("pay-fare-status", "Error paying fare: " + err.message, false);
+        } finally {
+          toggleLoading("pay-fare-loading", false);
+        }
+      }
+
+      async function scanQR() {
+        toggleLoading("driver-action-loading", true);
+        try {
+          const response = await fetch("/api/driver/qr-scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: currentUser.name, password: currentUser.password }),
+          });
+          const data = await response.json();
+          document.getElementById("driver-action-result").innerHTML = `<p>${data.message}</p>`;
+        } catch (err) {
+          document.getElementById("driver-action-result").innerHTML = "<p>Error scanning QR code: " + err.message + "</p>";
+        } finally {
+          toggleLoading("driver-action-loading", false);
+        }
+      }
+
+      async function logout() {
+        try {
+          await fetch("/api/logout", { method: "POST" });
+          currentUser = null;
+          userType = null;
+          document.querySelectorAll("input").forEach(input => input.value = "");
+          updateUserSection();
+          showSection("home");
+        } catch (err) {
+          console.error("Logout error:", err);
+          document.getElementById("driver-action-result").innerHTML = "<p>Error logging out: " + err.message + "</p>";
+        }
+      }
+
+      showSection("home");
+      updateUserSection();
+      updateProfileIcon();
+    </script>
+  </body>
+</html>
