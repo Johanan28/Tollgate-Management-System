@@ -14,6 +14,3 @@ A web application for managing tollgates, built with HTML, JavaScript, Node.js, 
 - Add and search tollgates
 - Manage vehicles and payments
 - QR code simulation for tollgate access
-
-## Acknowledgments
-Built with assistance from Grok, an AI created by xAI.
